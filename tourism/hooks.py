@@ -138,6 +138,10 @@ jinja = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
 # }
 
+override_doctype_class = {
+    "Request for Quotation": "tourism.overrides.request_for_quotation.CustomRequestforQuotation"
+}
+
 # Document Events
 # ---------------
 # Hook on document methods and events

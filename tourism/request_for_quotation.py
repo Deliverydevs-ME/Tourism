@@ -10,6 +10,28 @@ from frappe.utils.user import get_user_fullname
 STANDARD_USERS = ("Guest", "Administrator")
 
 
+def get_rfq_reply_to_sender():
+    """Return the outgoing email account's own address so that RFQ emails have
+    Reply-To == From (both the system account, e.g. erp@travel-app.net) instead
+    of the logged-in user.
+
+    Frappe sets Reply-To to the sender passed in and only afterwards swaps the
+    From to the account email (when 'always use account email as sender' is on).
+    Passing the account email as the sender makes both headers match.
+    """
+    try:
+        from frappe.email.doctype.email_account.email_account import EmailAccount
+
+        account = EmailAccount.find_outgoing(match_by_doctype="Request for Quotation")
+        if account and getattr(account, "email_id", None):
+            return account.email_id
+    except Exception:
+        pass
+    return frappe.db.get_value(
+        "Email Account", {"default_outgoing": 1, "enable_outgoing": 1}, "email_id"
+    )
+
+
 def on_submit(doc, method):
     """
     Custom on_submit hook for Request for Quotation.
@@ -87,8 +109,8 @@ def send_custom_rfq_emails(doc):
         group_vendor_code = doc.get("custom_group_vendor_code") or ""
         subject = f"RFQ - {group_vendor_code}"
 
-        # Handle sender
-        sender = (
+        # Handle sender: use the outgoing account so Reply-To matches From.
+        sender = get_rfq_reply_to_sender() or (
             frappe.session.user
             if frappe.session.user not in STANDARD_USERS
             else None
