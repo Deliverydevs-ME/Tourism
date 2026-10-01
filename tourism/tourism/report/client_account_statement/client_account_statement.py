@@ -76,7 +76,13 @@ def get_data(filters):
     conditions = ""
 
     if filters.get("party"):
-        conditions = "AND si.customer = %(party)s"
+        conditions += " AND si.customer = %(party)s"
+
+    if filters.get("from_date"):
+        conditions += " AND si.posting_date >= %(from_date)s"
+
+    if filters.get("to_date"):
+        conditions += " AND si.posting_date <= %(to_date)s"
 
     report_date = filters.get("report_date") or frappe.utils.today()
 
@@ -101,6 +107,8 @@ def get_data(filters):
             si.posting_date ASC
     """.format(conditions=conditions), {
         "party": filters.get("party"),
+        "from_date": filters.get("from_date"),
+        "to_date": filters.get("to_date"),
         "report_date": report_date
     }, as_dict=1)
 
