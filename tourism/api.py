@@ -92,15 +92,31 @@ def get_ticket_purchase_invoices(project):
     if not ticket_item:
         return {"non_return": [], "return": []}
 
+    # custom_sales_invoice is only ever set by the (currently disabled)
+    # Sales Invoice on_submit hook, so it can't be relied on to tell whether
+    # a ticket is already on another invoice. Check directly instead: a
+    # Purchase Invoice already sitting in a draft or submitted Sales
+    # Invoice's ticket grid must not be offered again.
+    used_purchase_invoices = frappe.db.sql("""
+        select distinct sitc.purchase_invoice
+        from `tabSales Invoice Ticket cdt` sitc
+        inner join `tabSales Invoice` si on si.name = sitc.parent
+        where si.docstatus < 2 and sitc.purchase_invoice is not null and sitc.purchase_invoice != ''
+    """, pluck=True)
+
+    pi_filters = {
+        "project": project,
+        "custom_sales_invoice": ["is", "not set"],
+        "custom_ticket_for": ["!=", "For Staff"],
+        "docstatus": ["<", 2],
+        "custom_purchase_invoice_for_": ticket_item
+    }
+    if used_purchase_invoices:
+        pi_filters["name"] = ["not in", used_purchase_invoices]
+
     rows = frappe.get_all(
         "Purchase Invoice",
-        filters={
-            "project": project,
-            "custom_sales_invoice": ["is", "not set"],
-            "custom_ticket_for": ["!=", "For Staff"],
-            "docstatus": ["<", 2], 
-            "custom_purchase_invoice_for_": ticket_item
-        },
+        filters=pi_filters,
         fields=[
             "name",
             "supplier",
