@@ -139,6 +139,7 @@ def get_ticket_purchase_invoices(project):
             "custom_commision",
             "custom_penalty__margin",
             "custom_penalty_margin",
+            "custom_receivable_return",
             "custom_ticket_remarks",
             "custom_total_fare",
             "custom_taxes1",
