@@ -145,6 +145,7 @@ def get_ticket_purchase_invoices(project):
             "custom_taxes1",
             "custom_fare_and_airline",
             "project",
+            "custom_receivable_after_sst",
             "custom_sst_amount",
             "custom_tour_from",
             "custom_tour_to",
