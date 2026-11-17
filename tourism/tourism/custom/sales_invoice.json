@@ -1109,7 +1109,7 @@
    "property": "default",
    "property_type": "Text",
    "row_name": null,
-   "value": "SINV-.YYYY.-.MM.-.DD.-"
+   "value": "ACC-SINV-.YYYY.-"
   },
   {
    "_assign": null,
@@ -1132,7 +1132,7 @@
    "property": "options",
    "property_type": "Text",
    "row_name": null,
-   "value": "SINV-.YYYY.-.MM.-.DD.-\nSINV-RET-.YYYY.-.MM.-.DD.-"
+   "value": "SINV-.YYYY.-.MM.-.DD.-\nSINV-RET-.YYYY.-.MM.-.DD.-\nACC-SINV-.YYYY.-\nACC-SINV-RET-.YYYY.-"
   },
   {
    "_assign": null,
